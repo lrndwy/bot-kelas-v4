@@ -129,10 +129,15 @@ coverage/
 build/
 dist/
 
-# Package manager lock files (keep one, ignore others)
-# Uncomment the one you want to keep
-# package-lock.json
-# yarn.lock
+# Package manager lock files (keep yarn.lock, ignore npm)
+package-lock.json
+
+# Yarn files
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
 # Local development files
 .env.local

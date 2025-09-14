@@ -29,8 +29,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY yarn.lock ./
 
-# Install dependencies
-RUN npm install --production
+# Install dependencies using yarn
+RUN yarn install --production --frozen-lockfile
 
 # Copy source code
 COPY . .
@@ -62,4 +62,4 @@ ENV NODE_ENV=production
 ENV TZ=Asia/Jakarta
 
 # Start command
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

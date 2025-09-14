@@ -37,7 +37,7 @@ chmod 755 sezz database uploads logs
 chmod 644 .env
 
 # Build Docker image
-echo "🔨 Building Docker image..."
+echo "🔨 Building Docker image with Yarn..."
 docker-compose build
 
 # Start the bot
@@ -57,6 +57,8 @@ echo "  • View logs: docker-compose logs -f"
 echo "  • Stop bot: docker-compose down"
 echo "  • Restart bot: docker-compose restart"
 echo "  • Update bot: docker-compose pull && docker-compose up -d"
+echo "  • Install new package: docker-compose exec wabase-bot yarn add <package>"
+echo "  • Remove package: docker-compose exec wabase-bot yarn remove <package>"
 echo ""
 echo "🔗 First run:"
 echo "  1. Check logs: docker-compose logs -f"
