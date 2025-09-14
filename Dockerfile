@@ -35,21 +35,21 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Create user with matching UID from host
+# Create user with matching UID from host (macOS compatibility)
 RUN deluser node \
-    && addgroup -g 501 hafiz \
-    && adduser -D -u 501 -G hafiz hafiz
+    && addgroup -g 20 staff \
+    && adduser -D -u 501 -G staff hafiz
 
 # Create necessary directories and set proper permissions
 RUN mkdir -p /app/uploads \
     && mkdir -p /app/database/data \
     && mkdir -p /app/sezz/auth \
     && mkdir -p /app/logs \
-    && chown -R hafiz:hafiz /app/uploads \
-    && chown -R hafiz:hafiz /app/database \
-    && chown -R hafiz:hafiz /app/sezz \
-    && chown -R hafiz:hafiz /app/logs \
-    && chown -R hafiz:hafiz /app
+    && chown -R hafiz:staff /app/uploads \
+    && chown -R hafiz:staff /app/database \
+    && chown -R hafiz:staff /app/sezz \
+    && chown -R hafiz:staff /app/logs \
+    && chown -R hafiz:staff /app
 
 # Switch to matching user
 USER hafiz
@@ -68,5 +68,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 ENV NODE_ENV=production
 ENV TZ=Asia/Jakarta
 
-# Start command with directory creation
-CMD ["sh", "-c", "mkdir -p /app/sezz/auth /app/database/data /app/uploads /app/logs && yarn start"]
+# Start command with selective directory creation
+CMD ["sh", "-c", "mkdir -p /app/database/data && yarn start"]
