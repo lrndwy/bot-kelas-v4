@@ -35,17 +35,6 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Create init script for permission handling
-RUN echo '#!/bin/sh\n\
-# Ensure directories exist\n\
-mkdir -p /app/sezz/auth\n\
-mkdir -p /app/database/data\n\
-mkdir -p /app/uploads\n\
-mkdir -p /app/logs\n\
-\n\
-# Execute the main command\n\
-exec "$@"' > /app/init.sh && chmod +x /app/init.sh
-
 # Create necessary directories and set proper permissions
 RUN mkdir -p /app/uploads \
     && mkdir -p /app/database/data \
@@ -54,14 +43,10 @@ RUN mkdir -p /app/uploads \
     && chown -R node:node /app/uploads \
     && chown -R node:node /app/database \
     && chown -R node:node /app/sezz \
-    && chown -R node:node /app/logs \
-    && chown node:node /app/init.sh
+    && chown -R node:node /app/logs
 
 # Switch to non-root user
 USER node
-
-# Set entrypoint
-ENTRYPOINT ["/app/init.sh"]
 
 # Create volume untuk data persistent
 VOLUME ["/app/sezz", "/app/database", "/app/uploads", "/app/logs"]
@@ -77,5 +62,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 ENV NODE_ENV=production
 ENV TZ=Asia/Jakarta
 
-# Start command
-CMD ["yarn", "start"]
+# Start command with directory creation
+CMD ["sh", "-c", "mkdir -p /app/sezz/auth /app/database/data /app/uploads /app/logs && yarn start"]
