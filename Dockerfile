@@ -1,5 +1,5 @@
-# Gunakan Node.js versi LTS sebagai base image
-FROM node:18-alpine
+# Gunakan Node.js versi 20 untuk kompatibilitas dengan @itsukichan/baileys
+FROM node:20-alpine
 
 # Set working directory di dalam container
 WORKDIR /app
