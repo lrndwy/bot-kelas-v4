@@ -47,6 +47,9 @@ RUN chown -R node:node /app
 # Switch to non-root user
 USER node
 
+# Ensure directories exist and have proper permissions after switching user
+RUN mkdir -p /app/sezz/auth /app/uploads /app/database/data /app/logs
+
 # Create volume untuk data persistent
 VOLUME ["/app/sezz", "/app/database", "/app/uploads", "/app/logs"]
 
