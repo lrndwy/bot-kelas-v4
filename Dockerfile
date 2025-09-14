@@ -35,19 +35,6 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Create necessary directories and set proper permissions
-RUN mkdir -p /app/uploads \
-    && mkdir -p /app/database/data \
-    && mkdir -p /app/sezz/auth \
-    && mkdir -p /app/logs \
-    && chown -R node:node /app/uploads \
-    && chown -R node:node /app/database \
-    && chown -R node:node /app/sezz \
-    && chown -R node:node /app/logs
-
-# Switch to non-root user
-USER node
-
 # Create init script for permission handling
 RUN echo '#!/bin/sh\n\
 # Ensure directories exist\n\
@@ -58,6 +45,20 @@ mkdir -p /app/logs\n\
 \n\
 # Execute the main command\n\
 exec "$@"' > /app/init.sh && chmod +x /app/init.sh
+
+# Create necessary directories and set proper permissions
+RUN mkdir -p /app/uploads \
+    && mkdir -p /app/database/data \
+    && mkdir -p /app/sezz/auth \
+    && mkdir -p /app/logs \
+    && chown -R node:node /app/uploads \
+    && chown -R node:node /app/database \
+    && chown -R node:node /app/sezz \
+    && chown -R node:node /app/logs \
+    && chown node:node /app/init.sh
+
+# Switch to non-root user
+USER node
 
 # Set entrypoint
 ENTRYPOINT ["/app/init.sh"]
