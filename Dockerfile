@@ -35,9 +35,22 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Create entrypoint script
+RUN echo '#!/bin/sh\n\
+# Ensure directories exist and have proper permissions\n\
+mkdir -p /app/sezz/auth\n\
+mkdir -p /app/database/data\n\
+mkdir -p /app/uploads\n\
+mkdir -p /app/logs\n\
+\n\
+# Set proper ownership for all directories\n\
+chown -R node:node /app/sezz\n\
+chown -R node:node /app/database\n\
+chown -R node:node /app/uploads\n\
+chown -R node:node /app/logs\n\
+\n\
+# Execute the main command\n\
+exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Create necessary directories and set proper permissions
 RUN mkdir -p /app/uploads \
