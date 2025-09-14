@@ -35,20 +35,25 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Create necessary directories
-RUN mkdir -p uploads \
-    && mkdir -p database/data \
-    && mkdir -p sezz/auth \
-    && mkdir -p logs
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Set proper permissions
-RUN chown -R node:node /app
+# Create necessary directories and set proper permissions
+RUN mkdir -p /app/uploads \
+    && mkdir -p /app/database/data \
+    && mkdir -p /app/sezz/auth \
+    && mkdir -p /app/logs \
+    && chown -R node:node /app/uploads \
+    && chown -R node:node /app/database \
+    && chown -R node:node /app/sezz \
+    && chown -R node:node /app/logs
 
 # Switch to non-root user
 USER node
 
-# Ensure directories exist and have proper permissions after switching user
-RUN mkdir -p /app/sezz/auth /app/uploads /app/database/data /app/logs
+# Set entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
 
 # Create volume untuk data persistent
 VOLUME ["/app/sezz", "/app/database", "/app/uploads", "/app/logs"]
