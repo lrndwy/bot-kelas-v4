@@ -35,23 +35,6 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Create entrypoint script
-RUN echo '#!/bin/sh\n\
-# Ensure directories exist and have proper permissions\n\
-mkdir -p /app/sezz/auth\n\
-mkdir -p /app/database/data\n\
-mkdir -p /app/uploads\n\
-mkdir -p /app/logs\n\
-\n\
-# Set proper ownership for all directories\n\
-chown -R node:node /app/sezz\n\
-chown -R node:node /app/database\n\
-chown -R node:node /app/uploads\n\
-chown -R node:node /app/logs\n\
-\n\
-# Execute the main command\n\
-exec "$@"' > /entrypoint.sh && chmod +x /entrypoint.sh
-
 # Create necessary directories and set proper permissions
 RUN mkdir -p /app/uploads \
     && mkdir -p /app/database/data \
@@ -65,8 +48,19 @@ RUN mkdir -p /app/uploads \
 # Switch to non-root user
 USER node
 
+# Create init script for permission handling
+RUN echo '#!/bin/sh\n\
+# Ensure directories exist\n\
+mkdir -p /app/sezz/auth\n\
+mkdir -p /app/database/data\n\
+mkdir -p /app/uploads\n\
+mkdir -p /app/logs\n\
+\n\
+# Execute the main command\n\
+exec "$@"' > /app/init.sh && chmod +x /app/init.sh
+
 # Set entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/init.sh"]
 
 # Create volume untuk data persistent
 VOLUME ["/app/sezz", "/app/database", "/app/uploads", "/app/logs"]
