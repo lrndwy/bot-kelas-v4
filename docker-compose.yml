@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  wabase:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wabase-bot
+    restart: unless-stopped
+    environment:
+      # Mode Environment
+      - NODE_ENV=production
+
+      # Bot Configuration
+      - BOT_NAME=${BOT_NAME:-Bot Kelas V4}
+      - BOT_NUMBER=${BOT_NUMBER:-6283832249883}
+
+      # Owner Configuration
+      - OWNER_NAME=${OWNER_NAME:-lrndwy}
+      - OWNER_NUMBER=${OWNER_NUMBER:-6285890392419}
+      - OWNER_INSTAGRAM_URL=${OWNER_INSTAGRAM_URL:-https://www.instagram.com/lrnd.__}
+
+      # Admin Configuration
+      - ADMIN_NUMBERS=${ADMIN_NUMBERS:-6285890392419}
+
+      # Bot Behavior Settings
+      - USE_STORE=${USE_STORE:-true}
+      - ONLINE_STATUS=${ONLINE_STATUS:-false}
+      - PREFIX_COMMAND=${PREFIX_COMMAND:-.}
+      - SPLIT_ARGS=${SPLIT_ARGS:-|}
+      - LOCALE=${LOCALE:-id_ID}
+      - TIMEZONE=${TIMEZONE:-Asia/Jakarta}
+      - INVITE_CODE=${INVITE_CODE:-}
+
+      # Logging Configuration
+      - VERBOSE=${VERBOSE:-false}
+
+      # Bot Mode Settings
+      - SELF_MODE=${SELF_MODE:-false}
+
+      # Image Configuration
+      - LOGO_IMAGE_URL=${LOGO_IMAGE_URL:-}
+
+    volumes:
+      # Mount direktori penting ke host untuk persistence
+      - ./sezz:/app/sezz
+      - ./database:/app/database
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+
+      # Mount file .env jika ada
+      - ./.env:/app/.env:ro
+
+    # Networking (tidak perlu expose port karena ini WhatsApp bot)
+    # ports:
+    #   - "3000:3000"  # uncomment jika ada web interface
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "sh", "-c", "ps aux | grep -q '[n]ode.*index' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+    # Resource limits (optional, sesuaikan dengan kebutuhan)
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+    # Logging driver
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Optional: Tambahkan service monitoring atau database jika diperlukan
+# services:
+#   redis:
+#     image: redis:7-alpine
+#     container_name: wabase-redis
+#     restart: unless-stopped
+#     volumes:
+#       - redis_data:/data
+#     ports:
+#       - "6379:6379"
+
+# volumes:
+#   redis_data:
