@@ -35,18 +35,24 @@ RUN yarn install --production --frozen-lockfile
 # Copy source code
 COPY . .
 
+# Create user with matching UID from host
+RUN deluser node \
+    && addgroup -g 501 hafiz \
+    && adduser -D -u 501 -G hafiz hafiz
+
 # Create necessary directories and set proper permissions
 RUN mkdir -p /app/uploads \
     && mkdir -p /app/database/data \
     && mkdir -p /app/sezz/auth \
     && mkdir -p /app/logs \
-    && chown -R node:node /app/uploads \
-    && chown -R node:node /app/database \
-    && chown -R node:node /app/sezz \
-    && chown -R node:node /app/logs
+    && chown -R hafiz:hafiz /app/uploads \
+    && chown -R hafiz:hafiz /app/database \
+    && chown -R hafiz:hafiz /app/sezz \
+    && chown -R hafiz:hafiz /app/logs \
+    && chown -R hafiz:hafiz /app
 
-# Switch to non-root user
-USER node
+# Switch to matching user
+USER hafiz
 
 # Create volume untuk data persistent
 VOLUME ["/app/sezz", "/app/database", "/app/uploads", "/app/logs"]
